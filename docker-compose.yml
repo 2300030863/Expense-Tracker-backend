@@ -34,19 +34,28 @@ services:
       
       # JWT Configuration
       SPRING_SECURITY_JWT_SECRET: mySecretKey123456789012345678901234567890123456789012345678901234567890
-      SPRING_SECURITY_JWT_EXPIRATION: 86400000
+      SPRING_SECURITY_JWT_EXPIRATION: "86400000"
       
       # Email Configuration
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: "587"
       SPRING_MAIL_USERNAME: experiencetracker52@gmail.com
       SPRING_MAIL_PASSWORD: "dpzm ryqj cisc vwdm"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: "true"
       APP_EMAIL_FROM: siveshkommalapati167@gmail.com
       
       # Profile
       SPRING_PROFILES_ACTIVE: mysql
       
       # Server Configuration
-      PORT: 8080
+      PORT: "8080"
       SERVER_SERVLET_CONTEXT_PATH: /expense-tracker-api
+      
+      # Logging
+      LOGGING_LEVEL_COM_EXPENSETRACKER: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
     ports:
       - "8086:8080"
     depends_on:
