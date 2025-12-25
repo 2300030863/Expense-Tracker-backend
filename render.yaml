@@ -1,0 +1,51 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: expense-tracker-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    envVars:
+      # Database Configuration (use Render's database connection string)
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: expense-tracker-db
+          property: connectionString
+      
+      # JWT Configuration (generate a strong secret)
+      - key: SPRING_SECURITY_JWT_SECRET
+        generateValue: true
+      
+      - key: SPRING_SECURITY_JWT_EXPIRATION
+        value: 86400000
+      
+      # Email Configuration
+      - key: SPRING_MAIL_USERNAME
+        sync: false  # Set this manually in Render dashboard
+      
+      - key: SPRING_MAIL_PASSWORD
+        sync: false  # Set this manually in Render dashboard
+      
+      - key: APP_EMAIL_FROM
+        sync: false  # Set this manually in Render dashboard
+      
+      # Profile
+      - key: SPRING_PROFILES_ACTIVE
+        value: mysql
+      
+      # Server Configuration
+      - key: SERVER_SERVLET_CONTEXT_PATH
+        value: /expense-tracker-api
+    
+    healthCheckPath: /expense-tracker-api/actuator/health
+    
+  # MySQL Database (or use PostgreSQL)
+  # Note: Render doesn't support MySQL on free tier, consider PostgreSQL
+  # - type: pgsql
+  #   name: expense-tracker-db
+  #   plan: free
+  #   databaseName: expense_tracker
+  #   databaseUser: expenseuser

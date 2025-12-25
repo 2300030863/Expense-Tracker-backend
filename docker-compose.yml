@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: expense-tracker-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: expense_tracker
+      MYSQL_USER: expenseuser
+      MYSQL_PASSWORD: expensepass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - expense-tracker-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense-tracker-backend
+    environment:
+      # Database Configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/expense_tracker?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: expenseuser
+      SPRING_DATASOURCE_PASSWORD: expensepass
+      
+      # JWT Configuration
+      SPRING_SECURITY_JWT_SECRET: mySecretKey123456789012345678901234567890123456789012345678901234567890
+      SPRING_SECURITY_JWT_EXPIRATION: 86400000
+      
+      # Email Configuration
+      SPRING_MAIL_USERNAME: experiencetracker52@gmail.com
+      SPRING_MAIL_PASSWORD: "dpzm ryqj cisc vwdm"
+      APP_EMAIL_FROM: siveshkommalapati167@gmail.com
+      
+      # Profile
+      SPRING_PROFILES_ACTIVE: mysql
+      
+      # Server Configuration
+      PORT: 8080
+      SERVER_SERVLET_CONTEXT_PATH: /expense-tracker-api
+    ports:
+      - "8086:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - expense-tracker-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  expense-tracker-network:
+    driver: bridge
