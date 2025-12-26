@@ -91,10 +91,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                            @Param("startDate") LocalDate startDate,
                                            @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT DATE_FORMAT(t.transactionDate, '%Y-%m'), COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+    @Query("SELECT CONCAT(YEAR(t.transactionDate), '-', LPAD(MONTH(t.transactionDate), 2, '0')), COALESCE(SUM(t.amount), 0) FROM Transaction t " +
            "WHERE t.user = :user AND t.type = :type AND t.transactionDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY DATE_FORMAT(t.transactionDate, '%Y-%m') " +
-           "ORDER BY DATE_FORMAT(t.transactionDate, '%Y-%m')")
+           "GROUP BY YEAR(t.transactionDate), MONTH(t.transactionDate) " +
+           "ORDER BY YEAR(t.transactionDate), MONTH(t.transactionDate)")
     List<Object[]> getMonthlyTrend(@Param("user") User user,
                                    @Param("type") TransactionType type,
                                    @Param("startDate") LocalDate startDate,
@@ -118,10 +118,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                                       @Param("endDate") LocalDate endDate);
 
     // For user groups - monthly trend (excluding admin)
-    @Query("SELECT DATE_FORMAT(t.transactionDate, '%Y-%m'), COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+    @Query("SELECT CONCAT(YEAR(t.transactionDate), '-', LPAD(MONTH(t.transactionDate), 2, '0')), COALESCE(SUM(t.amount), 0) FROM Transaction t " +
            "WHERE t.user.userGroup.id = :groupId AND t.user.role = 'ROLE_USER' AND t.type = :type AND t.transactionDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY DATE_FORMAT(t.transactionDate, '%Y-%m') " +
-           "ORDER BY DATE_FORMAT(t.transactionDate, '%Y-%m')")
+           "GROUP BY YEAR(t.transactionDate), MONTH(t.transactionDate) " +
+           "ORDER BY YEAR(t.transactionDate), MONTH(t.transactionDate)")
     List<Object[]> getMonthlyTrendByUserGroup(@Param("groupId") Long groupId,
                                               @Param("type") TransactionType type,
                                               @Param("startDate") LocalDate startDate,
@@ -228,13 +228,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                                                                     @Param("endDate") LocalDate endDate);
     
     // Monthly trend for admin's managed users
-    @Query("SELECT DATE_FORMAT(t.transactionDate, '%Y-%m'), COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+    @Query("SELECT CONCAT(YEAR(t.transactionDate), '-', LPAD(MONTH(t.transactionDate), 2, '0')), COALESCE(SUM(t.amount), 0) FROM Transaction t " +
            "LEFT JOIN t.user u " +
            "LEFT JOIN u.userGroup ug " +
            "WHERE (t.user = :adminUser OR u.admin = :admin OR ug.admin = :admin) " +
            "AND t.type = :type AND t.transactionDate BETWEEN :startDate AND :endDate " +
-           "GROUP BY DATE_FORMAT(t.transactionDate, '%Y-%m') " +
-           "ORDER BY DATE_FORMAT(t.transactionDate, '%Y-%m')")
+           "GROUP BY YEAR(t.transactionDate), MONTH(t.transactionDate) " +
+           "ORDER BY YEAR(t.transactionDate), MONTH(t.transactionDate)")
     List<Object[]> getMonthlyTrendByAdminManagedUsers(@Param("adminUser") User adminUser,
                                                       @Param("admin") Admin admin,
                                                       @Param("type") TransactionType type,
